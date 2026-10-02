@@ -29,3 +29,9 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 .DS_Store
+
+# Private Student Preparation & Viva Files (Local Only)
+docs/VIVA_PREPARATION.md
+docs/PRESENTATION_GUIDE.md
+docs/PROJECT_GUIDE.md
+

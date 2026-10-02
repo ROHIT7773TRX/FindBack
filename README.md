@@ -282,11 +282,10 @@ FindBack/
 
 ## 15. Documentation Quick Links
 
-- [ Master Project Understanding Guide](file:///d:/ca-2%20mongodb/docs/PROJECT_GUIDE.md)
-- [ 50+ Viva Questions & 20 Practice Queries](file:///d:/ca-2%20mongodb/docs/VIVA_PREPARATION.md)
-- [ 10-Slide Presentation Guide & Demo Flow](file:///d:/ca-2%20mongodb/docs/PRESENTATION_GUIDE.md)
-- [ Academic Project Report](file:///d:/ca-2%20mongodb/docs/PROJECT_REPORT.md)
-- [ Screenshots & Output Guide](file:///d:/ca-2%20mongodb/screenshots/SCREENSHOTS_GUIDE.md)
+- [📄 Academic Project Report](docs/PROJECT_REPORT.md)
+- [📸 Screenshots & Output Demonstration Guide](screenshots/SCREENSHOTS_GUIDE.md)
+- *Local Student Preparation Files (kept in local `docs/` folder for viva & presentation)*
+
 
 ---
 
