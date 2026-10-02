@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - FindBack | Campus Lost & Found System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            background-color: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #1e293b;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.2s ease-in-out;
+        }
+        .metric-card {
+            border-left: 5px solid;
+        }
+        .metric-card.primary { border-left-color: #3b82f6; }
+        .metric-card.danger { border-left-color: #ef4444; }
+        .metric-card.success { border-left-color: #10b981; }
+        .metric-card.warning { border-left-color: #f59e0b; }
+        .badge-lost { background-color: #fee2e2; color: #991b1b; }
+        .badge-found { background-color: #d1fae5; color: #065f46; }
+        .badge-open { background-color: #fef3c7; color: #92400e; }
+        .badge-matched { background-color: #e0e7ff; color: #3730a3; }
+        .badge-resolved { background-color: #dcfce7; color: #166534; }
+        .badge-closed { background-color: #f1f5f9; color: #475569; }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand text-primary fw-bold" href="/">
+                <i class="bi bi-compass-fill text-warning me-2"></i>FindBack <span class="badge bg-secondary fs-6">CA-2</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' %}active fw-semibold{% endif %}" href="/">
+                            <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/browse' %}active fw-semibold{% endif %}" href="/browse">
+                            <i class="bi bi-search me-1"></i> Browse & Search
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/report' %}active fw-semibold{% endif %}" href="/report">
+                            <i class="bi bi-plus-circle me-1"></i> Report Item
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/analytics' %}active fw-semibold{% endif %}" href="/analytics">
+                            <i class="bi bi-bar-chart-line-fill me-1"></i> Aggregation Analytics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/validation-demo' %}active fw-semibold{% endif %}" href="/validation-demo">
+                            <i class="bi bi-shield-check me-1"></i> $jsonSchema Validation
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center text-light small">
+                    <span class="badge bg-success me-2"><i class="bi bi-check2-circle me-1"></i>MongoDB Connected</span>
+                    <span class="text-muted">DB: campus_findback</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages Container -->
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Main Body Block -->
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-top text-center py-4 mt-5">
+        <div class="container">
+            <p class="mb-1 text-muted small"><strong>FindBack</strong> — Academic Project for MongoDB CA-2</p>
+            <p class="mb-0 text-muted small">Powered by <strong>MongoDB</strong>, <strong>PyMongo</strong>, and <strong>Python</strong></p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

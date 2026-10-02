@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card p-4">
+            <div class="d-flex align-items-center mb-4 border-bottom pb-3">
+                <div class="bg-primary text-white p-2 rounded-3 me-3">
+                    <i class="bi bi-file-earmark-plus fs-3"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-0">Report Lost or Found Item</h3>
+                    <p class="text-muted mb-0">Directly executes <code>db.items.insertOne()</code> with MongoDB <code>$jsonSchema</code> validation.</p>
+                </div>
+            </div>
+
+            <form action="/report" method="POST">
+                <div class="row g-3">
+                    <!-- Item ID -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Item Reference ID <span class="text-danger">*</span></label>
+                        <input type="text" name="item_id" class="form-control" value="{{ suggested_id }}" required>
+                        <div class="form-text">Unique alphanumeric identifier (e.g. ITEM-2026-045).</div>
+                    </div>
+
+                    <!-- Item Name -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Item Title / Name <span class="text-danger">*</span></label>
+                        <input type="text" name="item_name" class="form-control" placeholder="e.g., Casio fx-991EX Calculator" required>
+                    </div>
+
+                    <!-- Type -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Report Type <span class="text-danger">*</span></label>
+                        <select name="type" class="form-select" required>
+                            <option value="lost">I LOST an item (Lost Item)</option>
+                            <option value="found">I FOUND an item (Found Item)</option>
+                        </select>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Category <span class="text-danger">*</span></label>
+                        <select name="category" class="form-select" required>
+                            {% for cat in categories %}
+                            <option value="{{ cat }}">{{ cat }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Campus Location -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Campus Location <span class="text-danger">*</span></label>
+                        <select name="location" class="form-select" required>
+                            {% for loc in locations %}
+                            <option value="{{ loc }}">{{ loc }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Reward -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Reward Amount (₹)</label>
+                        <input type="number" name="reward" class="form-control" value="0" min="0" step="10">
+                        <div class="form-text">Optional monetary incentive for finder.</div>
+                    </div>
+
+                    <!-- Detailed Description -->
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Detailed Description <span class="text-danger">*</span></label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="Color, brand, identifying marks, serial number, stickers..." required></textarea>
+                    </div>
+
+                    <!-- Reporter User ID -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Reported By (User ID) <span class="text-danger">*</span></label>
+                        <select name="reported_by" class="form-select" required>
+                            {% for user in users %}
+                            <option value="{{ user.user_id }}">{{ user.name }} ({{ user.user_id }} - {{ user.department }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Contact Email -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Contact Email</label>
+                        <input type="email" name="contact_email" class="form-control" placeholder="user@campus.edu">
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Search Tags (comma separated)</label>
+                        <input type="text" name="tags" class="form-control" placeholder="calculator, casio, black, stationery">
+                    </div>
+
+                    <div class="col-12 mt-4 d-flex justify-content-end gap-2">
+                        <a href="/browse" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4 fw-semibold">
+                            <i class="bi bi-cloud-upload me-1"></i> Submit Report to MongoDB
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

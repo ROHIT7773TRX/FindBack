@@ -1,0 +1,120 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="fw-bold mb-1"><i class="bi bi-shield-check text-success me-2"></i>MongoDB $jsonSchema Validation Live Demo</h2>
+        <p class="text-muted mb-0">Demonstrating strict schema validation enforced natively by MongoDB at the database engine level.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card p-4 h-100">
+            <h5 class="fw-bold text-success mb-3"><i class="bi bi-check-circle-fill me-2"></i>Test 1: Insert Valid Document</h5>
+            <p class="text-muted small">Inserts a document satisfying all required fields (<code>item_id</code>, <code>item_name</code>, <code>category</code>, <code>location</code>, <code>date_reported</code>, <code>status</code>) and matching allowed enums.</p>
+            
+            <pre class="bg-light p-3 rounded border font-monospace small">
+{
+  "item_id": "TEST-VAL-001",
+  "item_name": "Valid Test Book",
+  "category": "Books",
+  "type": "lost",
+  "description": "Database Systems Concepts 7th Ed",
+  "location": "Central Library",
+  "status": "open",
+  "reported_by": "USR-101"
+}
+            </pre>
+
+            <form action="/validation-demo/run" method="POST" class="mt-auto">
+                <input type="hidden" name="test_type" value="valid">
+                <button type="submit" class="btn btn-success w-100 fw-semibold">
+                    <i class="bi bi-play-circle me-1"></i> Test Valid Insert (Should Succeed)
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card p-4 h-100">
+            <h5 class="fw-bold text-danger mb-3"><i class="bi bi-x-circle-fill me-2"></i>Test 2: Invalid Category (Enum Violation)</h5>
+            <p class="text-muted small">Attempts to insert a document with an illegal category value not present in the allowed enum list.</p>
+            
+            <pre class="bg-light p-3 rounded border font-monospace small">
+{
+  "item_id": "TEST-VAL-002",
+  "item_name": "Invalid Category Item",
+  "category": "ILLEGAL_CATEGORY_VALUE", //  REJECTED!
+  "type": "lost",
+  "description": "Validation test document",
+  "location": "Science Block 1",
+  "status": "open",
+  "reported_by": "USR-101"
+}
+            </pre>
+
+            <form action="/validation-demo/run" method="POST" class="mt-auto">
+                <input type="hidden" name="test_type" value="invalid_category">
+                <button type="submit" class="btn btn-danger w-100 fw-semibold">
+                    <i class="bi bi-play-circle me-1"></i> Test Invalid Category (MongoDB Rejection)
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card p-4 h-100">
+            <h5 class="fw-bold text-danger mb-3"><i class="bi bi-x-circle-fill me-2"></i>Test 3: Missing Required Field</h5>
+            <p class="text-muted small">Attempts to insert a document without the mandatory <code>location</code> field.</p>
+            
+            <pre class="bg-light p-3 rounded border font-monospace small">
+{
+  "item_id": "TEST-VAL-003",
+  "item_name": "Missing Location Item",
+  "category": "Electronics",
+  "type": "found",
+  "description": "Validation test without location",
+  // "location": OMITTED! ->  REJECTED!
+  "status": "open",
+  "reported_by": "USR-105"
+}
+            </pre>
+
+            <form action="/validation-demo/run" method="POST" class="mt-auto">
+                <input type="hidden" name="test_type" value="missing_location">
+                <button type="submit" class="btn btn-danger w-100 fw-semibold">
+                    <i class="bi bi-play-circle me-1"></i> Test Missing Field (MongoDB Rejection)
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card p-4 h-100">
+            <h5 class="fw-bold text-danger mb-3"><i class="bi bi-x-circle-fill me-2"></i>Test 4: Illegal Status Value</h5>
+            <p class="text-muted small">Attempts to insert a document with status <code>'in_review'</code> (allowed: open, matched, resolved, closed).</p>
+            
+            <pre class="bg-light p-3 rounded border font-monospace small">
+{
+  "item_id": "TEST-VAL-004",
+  "item_name": "Illegal Status Test",
+  "category": "Stationery",
+  "type": "lost",
+  "description": "Validation test document",
+  "location": "Main Auditorium",
+  "status": "in_review", //  REJECTED!
+  "reported_by": "USR-102"
+}
+            </pre>
+
+            <form action="/validation-demo/run" method="POST" class="mt-auto">
+                <input type="hidden" name="test_type" value="invalid_status">
+                <button type="submit" class="btn btn-danger w-100 fw-semibold">
+                    <i class="bi bi-play-circle me-1"></i> Test Illegal Status (MongoDB Rejection)
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

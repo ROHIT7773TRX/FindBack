@@ -1,0 +1,157 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="fw-bold mb-1">Campus Lost & Found Intelligence Dashboard</h2>
+            <p class="text-muted mb-0">Real-time statistics computed live from MongoDB collections.</p>
+        </div>
+        <div>
+            <a href="/report" class="btn btn-primary shadow-sm"><i class="bi bi-plus-lg me-1"></i> Report Item</a>
+        </div>
+    </div>
+</div>
+
+<!-- Metrics Row -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card p-3 metric-card primary">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small fw-semibold">TOTAL REPORTS</span>
+                    <h3 class="fw-bold mb-0 text-primary">{{ counts.total_reports }}</h3>
+                </div>
+                <div class="fs-1 text-primary opacity-50"><i class="bi bi-folder2-open"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 metric-card danger">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small fw-semibold">LOST ITEMS</span>
+                    <h3 class="fw-bold mb-0 text-danger">{{ counts.lost_items }}</h3>
+                </div>
+                <div class="fs-1 text-danger opacity-50"><i class="bi bi-exclamation-triangle"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 metric-card success">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small fw-semibold">FOUND ITEMS</span>
+                    <h3 class="fw-bold mb-0 text-success">{{ counts.found_items }}</h3>
+                </div>
+                <div class="fs-1 text-success opacity-50"><i class="bi bi-check-circle"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 metric-card warning">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small fw-semibold">OPEN / UNRESOLVED</span>
+                    <h3 class="fw-bold mb-0 text-warning">{{ counts.open_reports }}</h3>
+                </div>
+                <div class="fs-1 text-warning opacity-50"><i class="bi bi-hourglass-split"></i></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Reports Table -->
+<div class="card p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0"><i class="bi bi-clock-history me-2"></i>Recently Reported Items (MongoDB find)</h5>
+        <a href="/browse" class="btn btn-sm btn-outline-secondary">View All <i class="bi bi-arrow-right"></i></a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Item ID</th>
+                    <th>Item Name</th>
+                    <th>Category</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Reward</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in recent_items %}
+                <tr>
+                    <td><span class="font-monospace fw-semibold">{{ item.item_id }}</span></td>
+                    <td><strong>{{ item.item_name }}</strong></td>
+                    <td><span class="badge bg-secondary">{{ item.category }}</span></td>
+                    <td>
+                        <span class="badge {% if item.type == 'lost' %}badge-lost{% else %}badge-found{% endif %}">
+                            {{ item.type|upper }}
+                        </span>
+                    </td>
+                    <td><i class="bi bi-geo-alt text-danger me-1"></i>{{ item.location }}</td>
+                    <td>
+                        <span class="badge badge-{{ item.status }}">
+                            {{ item.status|capitalize }}
+                        </span>
+                    </td>
+                    <td>{% if item.reward > 0 %}₹{{ item.reward }}{% else %}<span class="text-muted">-</span>{% endif %}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <a href="/browse?keyword={{ item.item_id }}" class="btn btn-outline-primary" title="Details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Hotspots and Categories preview -->
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card p-4 h-100">
+            <h5 class="fw-bold mb-3"><i class="bi bi-geo-fill text-danger me-2"></i>Top Reporting Hotspots ($group)</h5>
+            <ul class="list-group list-group-flush">
+                {% for loc in top_locations %}
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                    <div>
+                        <i class="bi bi-pin-map text-primary me-2"></i>{{ loc.location }}
+                    </div>
+                    <div>
+                        <span class="badge bg-primary rounded-pill">{{ loc.report_count }} reports</span>
+                        <span class="badge bg-warning text-dark rounded-pill">{{ loc.unresolved_count }} open</span>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-4 h-100">
+            <h5 class="fw-bold mb-3"><i class="bi bi-pie-chart-fill text-primary me-2"></i>Category Breakdown ($group)</h5>
+            <ul class="list-group list-group-flush">
+                {% for cat in category_stats %}
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                    <div>
+                        <i class="bi bi-tag text-success me-2"></i>{{ cat.category }}
+                    </div>
+                    <div>
+                        <span class="badge bg-danger rounded-pill">{{ cat.lost_count }} lost</span>
+                        <span class="badge bg-success rounded-pill">{{ cat.found_count }} found</span>
+                        <span class="badge bg-dark rounded-pill">{{ cat.total_reports }} total</span>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

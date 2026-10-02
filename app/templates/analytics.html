@@ -1,0 +1,204 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="fw-bold mb-1"><i class="bi bi-cpu-fill text-primary me-2"></i>MongoDB Aggregation Intelligence</h2>
+        <p class="text-muted mb-0">Multi-stage pipeline analytics executing live across documents using <code>db.items.aggregate()</code>.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Pipeline 1: Category Distribution -->
+    <div class="col-lg-6">
+        <div class="card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">1. Reports by Category</h5>
+                <span class="badge bg-primary">$group + $sort</span>
+            </div>
+            <p class="text-muted small">Groups documents by category and calculates lost and found counts.</p>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Category</th>
+                            <th class="text-center">Total</th>
+                            <th class="text-center text-danger">Lost</th>
+                            <th class="text-center text-success">Found</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cat in category_stats %}
+                        <tr>
+                            <td><strong>{{ cat.category }}</strong></td>
+                            <td class="text-center fw-bold">{{ cat.total_reports }}</td>
+                            <td class="text-center">{{ cat.lost_count }}</td>
+                            <td class="text-center">{{ cat.found_count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pipeline 2: Location Hotspots -->
+    <div class="col-lg-6">
+        <div class="card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">2. Campus Location Hotspots</h5>
+                <span class="badge bg-danger">$group + $sort + $limit</span>
+            </div>
+            <p class="text-muted small">Identifies top locations on campus with the highest activity and unresolved items.</p>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Location</th>
+                            <th class="text-center">Total Reports</th>
+                            <th class="text-center text-warning">Unresolved</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for loc in location_stats %}
+                        <tr>
+                            <td><i class="bi bi-geo-alt text-danger me-1"></i><strong>{{ loc.location }}</strong></td>
+                            <td class="text-center fw-bold">{{ loc.report_count }}</td>
+                            <td class="text-center text-warning fw-bold">{{ loc.unresolved_count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pipeline 3: Lost vs Found Resolution Rate -->
+    <div class="col-lg-6">
+        <div class="card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">3. Resolution Rate by Report Type</h5>
+                <span class="badge bg-success">$group + $project ($multiply, $divide)</span>
+            </div>
+            <p class="text-muted small">Calculates the percentage of items returned to owners for Lost vs Found reports.</p>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Type</th>
+                            <th class="text-center">Total</th>
+                            <th class="text-center text-success">Resolved</th>
+                            <th class="text-center text-warning">Open</th>
+                            <th class="text-center text-primary">Resolution %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in type_stats %}
+                        <tr>
+                            <td><strong>{{ item.report_type|upper }}</strong></td>
+                            <td class="text-center">{{ item.total_items }}</td>
+                            <td class="text-center text-success">{{ item.resolved_items }}</td>
+                            <td class="text-center text-warning">{{ item.open_items }}</td>
+                            <td class="text-center fw-bold text-primary">{{ item.resolution_rate_percent }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pipeline 4: Status Distribution -->
+    <div class="col-lg-6">
+        <div class="card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">4. Lifecycle Status Breakdown</h5>
+                <span class="badge bg-info text-dark">$group + $sort</span>
+            </div>
+            <p class="text-muted small">Overall distribution across open, matched, resolved, and closed statuses.</p>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Status</th>
+                            <th class="text-center">Document Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in status_stats %}
+                        <tr>
+                            <td><span class="badge badge-{{ s.status }}">{{ s.status|capitalize }}</span></td>
+                            <td class="text-center fw-bold">{{ s.count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pipeline 5: Open High-Value Electronics -->
+    <div class="col-lg-6">
+        <div class="card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">5. Open Electronics & Avg Reward</h5>
+                <span class="badge bg-warning text-dark">$match + $group + $avg</span>
+            </div>
+            <p class="text-muted small">Filters for Electronics in 'open' status and calculates average reward offered by location.</p>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Location</th>
+                            <th class="text-center">Open Electronics</th>
+                            <th class="text-center">Avg Reward (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for el in electronics_stats %}
+                        <tr>
+                            <td><strong>{{ el.location }}</strong></td>
+                            <td class="text-center fw-bold">{{ el.open_electronics_count }}</td>
+                            <td class="text-center">₹{{ el.average_reward }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pipeline 6: Cross Collection Lookup -->
+    <div class="col-lg-6">
+        <div class="card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">6. Cross-Collection Join ($lookup)</h5>
+                <span class="badge bg-secondary">$lookup + $unwind</span>
+            </div>
+            <p class="text-muted small">Joins <code>items.reported_by</code> with <code>users.user_id</code> to enrich reports.</p>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Reporter</th>
+                            <th>Department</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in lookup_stats %}
+                        <tr>
+                            <td><strong class="small">{{ item.item_name }}</strong></td>
+                            <td>{{ item.reporter_name }}</td>
+                            <td><span class="badge bg-light text-dark">{{ item.department }}</span></td>
+                            <td><span class="badge bg-dark">{{ item.reporter_role }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
